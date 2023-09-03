@@ -58,7 +58,7 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
       @Param("escaped") Boolean escaped);
 
   @Query(
-      "SELECT COUNT(f), AVG(f.acres), MIN(f.year), MAX(f.year), MIN(f.acres), MAX(f.acres) FROM Fire f WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and"
+      "SELECT COUNT(f), AVG(f.acres), MIN(f.year), MAX(f.year), MIN(f.acres), MAX(f.acres), MIN(f.month), MAX(f.month) FROM Fire f WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and"
           + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
           + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
           + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "

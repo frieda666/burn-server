@@ -158,8 +158,11 @@ public class BurnsController {
     Integer maxYear = Integer.parseInt(stats[3]);
     Double minSize = Double.parseDouble(stats[4]);
     Double maxSize = Double.parseDouble(stats[5]);
-    Statistics fireStatistics = new Statistics(count, size, minYear, maxYear, minSize, maxSize);
+    Integer minMonth = Integer.parseInt(stats[6]) + 1;
+    Integer maxMonth = Integer.parseInt(stats[7]) + 1;
+    Statistics fireStatistics = new Statistics(count, size, minYear, maxYear, minSize, maxSize, minMonth, maxMonth);
     return fireStatistics;
+
   }
 
   private List<Record> readRecords(InputStream data) {
