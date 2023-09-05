@@ -52,7 +52,7 @@ public class DataIngestService {
 
     try {
       final var fireDate = Calendar.getInstance();
-      fireDate.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(fireRecord.getString("date")));
+      fireDate.setTime(new SimpleDateFormat("MM/dd/yyyy").parse(fireRecord.getString("date")));
       fire.setYear(fireDate.get(Calendar.YEAR));
       fire.setMonth(fireDate.get(Calendar.MONTH));
       fire.setDay(fireDate.get(Calendar.DAY_OF_MONTH));
