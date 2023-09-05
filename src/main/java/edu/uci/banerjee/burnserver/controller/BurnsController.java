@@ -87,7 +87,7 @@ public class BurnsController {
       @RequestParam(required = false) Integer startMonth,
       @RequestParam(required = false) Integer endMonth,
       @RequestParam(required = false) String owner,
-      @RequestParam(required = false) Boolean escaped,
+      @RequestParam(required = false) String fireType,
       @RequestParam(required = false) Double minSeverity,
       @RequestParam(required = false) Double maxSeverity) {
 
@@ -107,7 +107,7 @@ public class BurnsController {
             startMonth,
             endMonth,
             owner,
-            escaped);
+            fireType);
     final var resp = new Resp(new EmbeddedData(fires));
 
     log.debug("Discovered {}.", resp);
@@ -129,7 +129,7 @@ public class BurnsController {
       @RequestParam(required = false) Integer startMonth,
       @RequestParam(required = false) Integer endMonth,
       @RequestParam(required = false) String owner,
-      @RequestParam(required = false) Boolean escaped,
+      @RequestParam(required = false) String fireType,
       @RequestParam(required = false) Double minSeverity,
       @RequestParam(required = false) Double maxSeverity) {
 
@@ -149,7 +149,7 @@ public class BurnsController {
             startMonth,
             endMonth,
             owner,
-            escaped);
+            fireType);
 
     String[] stats = fireStats.split(",");
     Integer count = Integer.parseInt(stats[0]);

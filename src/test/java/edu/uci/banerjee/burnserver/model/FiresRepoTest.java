@@ -34,7 +34,7 @@ public class FiresRepoTest {
             22,
             "Private",
             10.25,
-            false);
+            "PRESCRIBED FIRE");
     repo.save(fire);
   }
 
@@ -112,20 +112,6 @@ public class FiresRepoTest {
     Assertions.assertThat(firesList).isNotNull();
     Assertions.assertThat(firesList.size()).isGreaterThan(0);
     Assertions.assertThat(firesList.size()).isEqualTo(1);
-  }
-
-  @Test
-  void findByEscapedFalse() {
-    List<Fire> firesList = repo.findByEscapedFalse();
-    Assertions.assertThat(firesList).isNotNull();
-    Assertions.assertThat(firesList.size()).isGreaterThan(0);
-    Assertions.assertThat(firesList.size()).isEqualTo(1);
-  }
-
-  @Test
-  void findByEscapedTrue() {
-    List<Fire> firesList = repo.findByEscapedTrue();
-    Assertions.assertThat(firesList.size()).isEqualTo(0);
   }
 
   @Test

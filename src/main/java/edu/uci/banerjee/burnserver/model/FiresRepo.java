@@ -12,10 +12,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "fires", path = "fires")
 public interface FiresRepo extends JpaRepository<Fire, Integer> {
 
-  List<Fire> findByEscapedFalse();
-
-  List<Fire> findByEscapedTrue();
-
   List<Fire> findBySource(String source);
 
   List<Fire> findByCounty(String county);
@@ -34,6 +30,8 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
 
   List<Fire> findBySeverityBetween(Double min, Double max);
 
+  List<Fire> findByFireType(String fireType);
+
   // todo this needs some work done to how the start and end months were implemented. We need to
   // revisit the ux of that filter
   @Query(
@@ -41,7 +39,8 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
           + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
           + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
           + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
-          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and (:escaped is null or f.escaped = :escaped)")
+          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
+          + "(:fireType is null or f.fireType = :fireType)")
   List<Fire> findByAllParams(
       @Param("source") String source,
       @Param("countyUnitId") String countyUnitId,
@@ -55,14 +54,15 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
       @Param("startMonth") Integer startMonth,
       @Param("endMonth") Integer endMonth,
       @Param("owner") String owner,
-      @Param("escaped") Boolean escaped);
+      @Param("fireType") String fireType);
 
   @Query(
       "SELECT COUNT(f), AVG(f.acres), MIN(f.year), MAX(f.year), MIN(f.acres), MAX(f.acres), MIN(f.month), MAX(f.month) FROM Fire f WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and"
           + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
           + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
           + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
-          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and (:escaped is null or f.escaped = :escaped)")
+          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
+          + "(:fireType is null or f.fireType = :fireType)")
   String filterStatistics(
       @Param("source") String source,
       @Param("countyUnitId") String countyUnitId,
@@ -76,5 +76,5 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
       @Param("startMonth") Integer startMonth,
       @Param("endMonth") Integer endMonth,
       @Param("owner") String owner,
-      @Param("escaped") Boolean escaped);
+      @Param("fireType") String fireType);
 }

@@ -17,8 +17,7 @@ import javax.persistence.*;
     indexes = {
       @Index(columnList = "source", name = "sourceIndex"),
       @Index(columnList = "county", name = "countyIndex"),
-      @Index(columnList = "year", name = "yearIndex"),
-      @Index(columnList = "escaped", name = "escapedIndex")
+      @Index(columnList = "year", name = "yearIndex")
     })
 public class Fire {
   @Id
@@ -68,8 +67,8 @@ public class Fire {
   @Column(name = "severity")
   private Double severity;
 
-  @Column(name = "escaped")
-  private Boolean escaped;
+  @Column(name = "fireType")
+  private String fireType;
 
   public Fire(
       double acres,
@@ -86,7 +85,7 @@ public class Fire {
       Integer day,
       String owner,
       Double severity,
-      Boolean escaped) {
+      String fireType) {
     this.acres = acres;
     this.burnType = burnType;
     this.treatmentType = treatmentType;
@@ -101,6 +100,6 @@ public class Fire {
     this.day = day;
     this.owner = owner;
     this.severity = severity;
-    this.escaped = escaped;
+    this.fireType = fireType;
   }
 }

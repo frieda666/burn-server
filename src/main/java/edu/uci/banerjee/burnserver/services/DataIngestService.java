@@ -46,9 +46,10 @@ public class DataIngestService {
     fire.setCountyUnitId(fireRecord.getString("county_unit_ID"));
     fire.setCounty(fireRecord.getString("county"));
     fire.setSource(fireRecord.getString("source"));
-    fire.setEscaped(Boolean.parseBoolean(fireRecord.getString("escaped")));
-    fire.setOwner(
-        landOwnershipService.getOwnershipFromCoordinate(fire.getLatitude(), fire.getLongitude()));
+    // landOwnershipService might give an exception to every fire entry causing major slowdown in receiving fire datasets
+    fire.setOwner(landOwnershipService.getOwnershipFromCoordinate(fire.getLatitude(), fire.getLongitude()));
+    //fire.setOwner("");
+    fire.setFireType(fireRecord.getString("fire_type"));
 
     try {
       final var fireDate = Calendar.getInstance();
