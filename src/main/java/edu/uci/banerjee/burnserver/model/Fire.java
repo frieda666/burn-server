@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 
@@ -69,6 +70,16 @@ public class Fire {
 
   @Column(name = "fireType")
   private String fireType;
+
+  @OneToOne(mappedBy = "fire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @PrimaryKeyJoinColumn
+  @JsonIgnoreProperties("fire") // Ignore the escapedFire property during serialization, prevent infinite serialization problem
+  private EscapedFire escapedFire; 
+
+  public void setEscapedFire(EscapedFire escapedFire) {
+    this.escapedFire = escapedFire;
+    this.escapedFire.setFire(this);
+  }
 
   public Fire(
       double acres,

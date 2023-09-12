@@ -117,7 +117,7 @@ public class FiresRepoTest {
   @Test
   void findByAllParams() {
     List<Fire> firesList =
-        repo.findByAllParams(null, null, null, null, null, null, null, null, null, null, null, null, null);
+        repo.findByAllParams(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     Assertions.assertThat(firesList).isNotNull();
     Assertions.assertThat(firesList.size()).isGreaterThan(0);
     Assertions.assertThat(firesList.size()).isEqualTo(1);

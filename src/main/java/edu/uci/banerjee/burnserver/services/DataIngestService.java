@@ -1,6 +1,9 @@
 package edu.uci.banerjee.burnserver.services;
 
 import com.univocity.parsers.common.record.Record;
+
+import edu.uci.banerjee.burnserver.model.EscapedFire;
+import edu.uci.banerjee.burnserver.model.EscapedFireRepo;
 import edu.uci.banerjee.burnserver.model.Fire;
 import edu.uci.banerjee.burnserver.model.FiresRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -11,27 +14,47 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Service
 @Slf4j
 public class DataIngestService {
-  private final FiresRepo repo;
+  private final FiresRepo fireRepo;
+  private final EscapedFireRepo escapedFireRepo;
   private final LandOwnershipService landOwnershipService;
+  private List<Fire> savedFires;
 
-  public DataIngestService(FiresRepo repo, LandOwnershipService landOwnershipService) {
-    this.repo = repo;
+  public DataIngestService(FiresRepo fireRepo, EscapedFireRepo escapedFireRepo, LandOwnershipService landOwnershipService) {
+    this.fireRepo = fireRepo;
+    this.escapedFireRepo = escapedFireRepo;
     this.landOwnershipService = landOwnershipService;
   }
 
   public int saveFires(List<Record> records) {
     log.debug("Saving new fires records.");
     final var burns = records.parallelStream().map(this::createFire).collect(toUnmodifiableList());
-    repo.saveAll(burns);
+    savedFires = fireRepo.saveAll(burns);
+
+    for (int i = 0; i < savedFires.size(); i++) { 
+        Record record = records.get(i);
+        Fire fire = savedFires.get(i);
+
+        try {
+            boolean escapedValue = record.getBoolean("escaped");
+
+            // Create an EscapedFire object with the extracted escaped value
+            EscapedFire escapedFire = new EscapedFire(record.getString("name"), escapedValue);
+
+            escapedFire.setFire(fire);
+            escapedFireRepo.save(escapedFire);
+        } catch (Exception e) {}
+    }
 
     return burns.size();
   }
+
 
   private Fire createFire(final Record fireRecord) {
     log.debug("Ingesting record {}", fireRecord);
@@ -46,10 +69,10 @@ public class DataIngestService {
     fire.setCountyUnitId(fireRecord.getString("county_unit_ID"));
     fire.setCounty(fireRecord.getString("county"));
     fire.setSource(fireRecord.getString("source"));
-    // landOwnershipService might give an exception to every fire entry causing major slowdown in receiving fire datasets
+    fire.setFireType(fireRecord.getString("fire_type"));
+    // landOwnershipService will give an exception to every fire entry if not connected
     fire.setOwner(landOwnershipService.getOwnershipFromCoordinate(fire.getLatitude(), fire.getLongitude()));
     //fire.setOwner("");
-    fire.setFireType(fireRecord.getString("fire_type"));
 
     try {
       final var fireDate = Calendar.getInstance();
@@ -64,4 +87,6 @@ public class DataIngestService {
 
     return fire;
   }
+
+
 }

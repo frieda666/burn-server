@@ -48,13 +48,16 @@ public class BurnsController {
     log.info("Received New Dataset.");
 
     if (file.isEmpty()) {
-      log.info("File Received Empty.");
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        log.info("File Received Empty.");
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    int numRecords = dataIngestService.saveFires(readRecords(file.getInputStream()));
+    List<Record> records = readRecords(file.getInputStream());
 
-    log.info("Saved {} Fires.", numRecords);
+    int totalRecords = dataIngestService.saveFires(records);
+
+    log.info("Saved {} Fires.", totalRecords);
+  
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -88,6 +91,7 @@ public class BurnsController {
       @RequestParam(required = false) Integer endMonth,
       @RequestParam(required = false) String owner,
       @RequestParam(required = false) String fireType,
+      @RequestParam(required = false) Boolean escaped,
       @RequestParam(required = false) Double minSeverity,
       @RequestParam(required = false) Double maxSeverity) {
 
@@ -107,7 +111,8 @@ public class BurnsController {
             startMonth,
             endMonth,
             owner,
-            fireType);
+            fireType,
+            escaped);
     final var resp = new Resp(new EmbeddedData(fires));
 
     log.debug("Discovered {}.", resp);
@@ -130,6 +135,7 @@ public class BurnsController {
       @RequestParam(required = false) Integer endMonth,
       @RequestParam(required = false) String owner,
       @RequestParam(required = false) String fireType,
+      @RequestParam(required = false) Boolean escaped,
       @RequestParam(required = false) Double minSeverity,
       @RequestParam(required = false) Double maxSeverity) {
 
@@ -149,7 +155,8 @@ public class BurnsController {
             startMonth,
             endMonth,
             owner,
-            fireType);
+            fireType,
+            escaped);
 
     String[] stats = fireStats.split(",");
     Integer count = Integer.parseInt(stats[0]);

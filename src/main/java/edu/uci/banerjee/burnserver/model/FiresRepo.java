@@ -12,6 +12,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "fires", path = "fires")
 public interface FiresRepo extends JpaRepository<Fire, Integer> {
 
+  List<Fire> findAll();
+
   List<Fire> findBySource(String source);
 
   List<Fire> findByCounty(String county);
@@ -32,49 +34,52 @@ public interface FiresRepo extends JpaRepository<Fire, Integer> {
 
   List<Fire> findByFireType(String fireType);
 
-  // todo this needs some work done to how the start and end months were implemented. We need to
-  // revisit the ux of that filter
-  @Query(
-      "SELECT f FROM Fire f WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and"
-          + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
-          + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
-          + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
-          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
-          + "(:fireType is null or f.fireType = :fireType)")
-  List<Fire> findByAllParams(
-      @Param("source") String source,
-      @Param("countyUnitId") String countyUnitId,
-      @Param("county") String county,
-      @Param("minAcres") Double minAcres,
-      @Param("maxAcres") Double maxAcres,
-      @Param("burnType") String burnType,
-      @Param("treatmentType") String treatmentType,
-      @Param("startYear") Integer startYear,
-      @Param("endYear") Integer endYear,
-      @Param("startMonth") Integer startMonth,
-      @Param("endMonth") Integer endMonth,
-      @Param("owner") String owner,
-      @Param("fireType") String fireType);
+    // todo this needs some work done to how the start and end months were implemented. We need to
+    // revisit the ux of that filter
+    @Query(
+    "SELECT f FROM Fire f LEFT JOIN f.escapedFire ef WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and "
+        + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
+        + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
+        + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
+        + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
+        + "(:fireType is null or f.fireType = :fireType) and (:escapedValue is null or ef.escaped = :escapedValue)")
+    List<Fire> findByAllParams(
+        @Param("source") String source,
+        @Param("countyUnitId") String countyUnitId,
+        @Param("county") String county,
+        @Param("minAcres") Double minAcres,
+        @Param("maxAcres") Double maxAcres,
+        @Param("burnType") String burnType,
+        @Param("treatmentType") String treatmentType,
+        @Param("startYear") Integer startYear,
+        @Param("endYear") Integer endYear,
+        @Param("startMonth") Integer startMonth,
+        @Param("endMonth") Integer endMonth,
+        @Param("owner") String owner,
+        @Param("fireType") String fireType,
+        @Param("escapedValue") Boolean escapedValue);
 
-  @Query(
-      "SELECT COUNT(f), AVG(f.acres), MIN(f.year), MAX(f.year), MIN(f.acres), MAX(f.acres), MIN(f.month), MAX(f.month) FROM Fire f WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and"
-          + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
-          + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
-          + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
-          + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
-          + "(:fireType is null or f.fireType = :fireType)")
-  String filterStatistics(
-      @Param("source") String source,
-      @Param("countyUnitId") String countyUnitId,
-      @Param("county") String county,
-      @Param("minAcres") Double minAcres,
-      @Param("maxAcres") Double maxAcres,
-      @Param("burnType") String burnType,
-      @Param("treatmentType") String treatmentType,
-      @Param("startYear") Integer startYear,
-      @Param("endYear") Integer endYear,
-      @Param("startMonth") Integer startMonth,
-      @Param("endMonth") Integer endMonth,
-      @Param("owner") String owner,
-      @Param("fireType") String fireType);
+    @Query(
+    "SELECT COUNT(f), AVG(f.acres), MIN(f.year), MAX(f.year), MIN(f.acres), MAX(f.acres), MIN(f.month), MAX(f.month) FROM Fire f LEFT JOIN f.escapedFire ef WHERE (:source is null or f.source = :source) and (:county is null or f.county like %:county%) and (:countyUnitId is null or f.countyUnitId = :countyUnitId) and "
+        + "(:minAcres is null or f.acres >= :minAcres) and (:maxAcres is null or f.acres <= :maxAcres) and "
+        + "(:burnType is null or f.burnType = :burnType) and (:treatmentType is null or f.treatmentType = :treatmentType) and (:startYear is null or f.year >= :startYear) and "
+        + "(:endYear is null or f.year <= :endYear) and (:startMonth is null or f.month >= :startMonth) and "
+        + "(:endMonth is null or f.month <= :endMonth) and (:owner is null or f.owner = :owner) and "
+        + "(:fireType is null or f.fireType = :fireType) and (:escapedValue is null or ef.escaped = :escapedValue)")
+    String filterStatistics(
+        @Param("source") String source,
+        @Param("countyUnitId") String countyUnitId,
+        @Param("county") String county,
+        @Param("minAcres") Double minAcres,
+        @Param("maxAcres") Double maxAcres,
+        @Param("burnType") String burnType,
+        @Param("treatmentType") String treatmentType,
+        @Param("startYear") Integer startYear,
+        @Param("endYear") Integer endYear,
+        @Param("startMonth") Integer startMonth,
+        @Param("endMonth") Integer endMonth,
+        @Param("owner") String owner,
+        @Param("fireType") String fireType,
+        @Param("escapedValue") Boolean escapedValue);
+
 }
